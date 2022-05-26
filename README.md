@@ -2,11 +2,13 @@
 
 ### References:  
 1. [Creating a blockchain in 60 lines of Javascript](https://dev.to/freakcdev297/creating-a-blockchain-in-60-lines-of-javascript-5fka)
+2. [Creating a cryptocurrency - Creating transactions, mining rewards, mint and gas fee ](https://dev.to/freakcdev297/creating-transactions-mining-rewards-mint-and-gas-fee-5hhf)
+3. [JeChain](https://github.com/nguyenphuminh/JeChain)
 
 ### TODO (adding up from time to time, welcome suggestions):
 1. Smart contract?
 2. proof of stake?
-3. 
+
 <hr/>
 
 <p align="center">
