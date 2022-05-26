@@ -14,6 +14,7 @@ export class AppController {
   @Post("/add-block-to-chain")
   @Header("content-type", "application/json")
   addBlockToChain(@Body() blockDto: BlockDto): string {
+    console.log("env ", process.env.reward_issuer_address)
     return this.appService.addBlockToChain(blockDto);
   }
 }

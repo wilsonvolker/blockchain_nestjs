@@ -1,3 +1,5 @@
+import {TransactionDto} from "./TransactionDto";
+
 export class BlockDto {
-    data: any[];
+    data: TransactionDto[];
 }

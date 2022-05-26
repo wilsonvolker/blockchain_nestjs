@@ -2,15 +2,10 @@ import * as sha256 from 'crypto-js/sha256';
 import * as enc_hex from 'crypto-js/enc-hex';
 import {DateTime} from 'luxon';
 import {log16} from "../utils/math";
+import {TransactionDto} from "../dto/TransactionDto";
 
 // class Block {
 export class Block {
-    private _timestamp: DateTime;
-    private _data: any[];
-    private _hash: string;
-    private _prevHash: string;
-    private _nonce: number;
-
     get hash(): string {
         return this._hash;
     }
@@ -48,7 +43,13 @@ export class Block {
         this._nonce = value;
     }
 
-    constructor(timestamp: DateTime = DateTime.now(), data: any[] = []) {
+    private _timestamp: DateTime;
+    private _data: any[];
+    private _hash: string;
+    private _prevHash: string;
+    private _nonce: number;
+
+    constructor(timestamp: DateTime = DateTime.now(), data: TransactionDto[] = []) {
         this._timestamp = timestamp;
         this._data = data;
         this._hash = this.genHash();
@@ -65,6 +66,7 @@ export class Block {
         // Basically, it loops until our hash starts with
         // the string 0...000 with length of <difficulty>.
         // console.log("Difficulty padding 0: ", Array(Math.round(log16(difficulty)) + 1).join("0"))
+        // console.log(Math.round(log16(difficulty)))
         while (!this._hash.startsWith(Array(Math.round(log16(difficulty)) + 1).join("0"))) {
             // We increase our nonce so that we can get a whole different hash.
             this._nonce++;
