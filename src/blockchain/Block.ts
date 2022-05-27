@@ -3,6 +3,8 @@ import * as enc_hex from 'crypto-js/enc-hex';
 import {DateTime} from 'luxon';
 import {log16} from "../utils/math";
 import {TransactionDto} from "../dto/TransactionDto";
+import {Blockchain} from "./Blockchain";
+import {MINT_PUBLIC_ADDRESS} from "../utils/addresses";
 
 // class Block {
 export class Block {
@@ -13,11 +15,11 @@ export class Block {
     set hash(value: string) {
         this._hash = value;
     }
-    get data(): any[] {
+    get data(): TransactionDto[] {
         return this._data;
     }
 
-    set data(value: any[]) {
+    set data(value: TransactionDto[]) {
         this._data = value;
     }
     get timestamp(): DateTime {
@@ -44,7 +46,7 @@ export class Block {
     }
 
     private _timestamp: DateTime;
-    private _data: any[];
+    private _data: TransactionDto[];
     private _hash: string;
     private _prevHash: string;
     private _nonce: number;
@@ -73,6 +75,25 @@ export class Block {
             // Update our new hash with the new nonce value.
             this._hash = this.genHash();
         }
+    }
+
+    static hasValidTransactions(block: Block, chain: Blockchain): boolean {
+        let gas = 0;
+        let reward = 0;
+
+        block.data.forEach(tx => {
+            if (tx.from !== MINT_PUBLIC_ADDRESS) {
+                gas += tx.gas;
+            }else {
+                reward = tx.amount
+            }
+        });
+
+        return (
+            reward - gas === chain.miningReward &&
+            block.data.every(tx => TransactionDto.isValid(tx, chain)) &&
+            block.data.filter(tx => tx.from === MINT_PUBLIC_ADDRESS).length === 1
+        );
     }
 }
 

@@ -1,6 +1,8 @@
 import {DateTime} from 'luxon'
 import {Block} from "./Block";
 import {TransactionDto} from "../dto/TransactionDto";
+import {MINT_KEY_PAIR, MINT_PUBLIC_ADDRESS} from "../utils/addresses";
+import {ecKeyPair, genSigningKey} from "../utils/keypairs";
 
 export class Blockchain{
     get transactionPool(): any[] {
@@ -33,7 +35,20 @@ export class Blockchain{
 
     constructor(){
         this._chain = [];
-        this.addBlock(new Block(DateTime.now())); // genesis block
+
+        const kp: genSigningKey = new genSigningKey();
+        const initHolderKeyPair: ecKeyPair = kp.signingKeyPair;
+        const initCoinRelease: TransactionDto = new TransactionDto(
+            MINT_PUBLIC_ADDRESS,
+            initHolderKeyPair.getPublic("hex"),
+            100000
+        )
+        const initCoinReleaseBlk: Block = new Block(
+            DateTime.now(),
+            [initCoinRelease]
+        );
+
+        this.addBlock(initCoinReleaseBlk); // genesis block
     }
 
     getLastBlock() {
@@ -59,27 +74,61 @@ export class Blockchain{
     }
 
     addTransaction(transaction: TransactionDto) {
-        this._transactionPool.push(transaction)
+        if (TransactionDto.isValid(transaction, this)) {
+            this._transactionPool.push(transaction)
+        }
     }
 
-    mineTransaction(minerAddress: string) {
-        this.addBlock(new Block(DateTime.now(),
-            [new TransactionDto(process.env.reward_issuer_address, minerAddress, this.miningReward),
-                ...this._transactionPool]
-        )) // add transaction to chain
+    mineTransaction(rewardAddress: string) {
+        let gas = 0;
+
+        this._transactionPool.forEach(tx => {
+            gas += tx.gas;
+        })
+
+        const rewardTransaction = new TransactionDto(MINT_PUBLIC_ADDRESS, rewardAddress, this.miningReward + gas) // reward issuer (mint) to miner (reward) address
+        rewardTransaction.sign(MINT_KEY_PAIR);
+
+        if (this._transactionPool.length !== 0) {
+            this.addBlock(
+                new Block(DateTime.now(),
+                    [rewardTransaction, ...this._transactionPool]
+            )) // add transaction to chain
+        }
+
         this._transactionPool = []; // remove the transaction from temporary pool
     }
 
-    static isValid(blockchain: Blockchain): Boolean{
+    getBalance(address: string): number {
+        let balance: number = 0;
+
+        this.chain.forEach(block => {
+            block.data.forEach(transaction => {
+                if (transaction.from === address) { // if sender -> decrement
+                    balance -= transaction.amount;
+                    balance -= transaction.gas;
+                }
+
+                if (transaction.to === address) { // if receiver -> increment
+                    balance += transaction.amount;
+                }
+            })
+        })
+
+        return balance;
+    }
+
+    static isValid(blockchain: Blockchain): boolean{
         for (let i=1; i < blockchain._chain.length; i++) {
             const currentBlock = blockchain._chain[i];
             const prevBlock = blockchain._chain[i-1];
 
             // check if valid
-            const curHashCond = currentBlock.hash !== currentBlock.genHash()
-            const prevHashCond = currentBlock.prevHash !== prevBlock.hash;
+            const invalidCurHashCond = currentBlock.hash !== currentBlock.genHash()
+            const invalidPrevHashCond = currentBlock.prevHash !== prevBlock.hash;
+            const invalidTxCond = !Block.hasValidTransactions(currentBlock, blockchain)
 
-            if (curHashCond || prevHashCond) {
+            if (invalidCurHashCond || invalidPrevHashCond || invalidTxCond) {
                 return false;
             }
         }
