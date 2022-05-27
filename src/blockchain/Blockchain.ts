@@ -55,6 +55,7 @@ export class Blockchain{
         return this._chain[this._chain.length - 1];
     }
 
+    // TODO: Seems wrong logic, need to update. See proof-of-work in https://dev.to/freakcdev297/creating-a-blockchain-in-60-lines-of-javascript-5fka
     addBlock(block: Block) {
         if (this.getLastBlock()) {
             block.prevHash = this.getLastBlock().hash;

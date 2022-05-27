@@ -15,11 +15,14 @@ describe('Blockchain test', () => {
         await app.init();
     });
 
-    it('/ (GET)', () => {
-        console.log("running test")
-        return request(app.getHttpServer())
-            .get('/')
-            .expect(200)
-            .expect('Hello World!');
+    it('Test add and mine transaction from blockchain', () => {
+        // console.log("running test")
+        // return request(app.getHttpServer())
+        //     .get('/')
+        //     .expect(200)
+        //     .expect('Hello World!');
+
+        // TODO: Need to construct a test case
+        
     });
 });
