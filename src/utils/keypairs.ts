@@ -3,9 +3,12 @@
 
 import * as sha256 from 'crypto-js/sha256';
 import {ec} from "elliptic";
+import {MINT_KEY_PAIR, MINT_PUBLIC_ADDRESS} from "./addresses";
+import {Injectable} from "@nestjs/common";
 const secp256k1: ec  = new ec("secp256k1");
 
-// singleton
+// Xsingleton
+@Injectable
 export class genSigningKey {
     // private static instance: genSigningKey;
     private _signingKeyPair: ec.KeyPair;
@@ -36,6 +39,14 @@ export class genSigningKey {
         this._signingKeyPair = value;
     }
 
+    get publicKey(): string {
+        return this._signingKeyPair.getPublic("hex")
+    }
+
+    get privateKey(): string {
+        return this._signingKeyPair.getPrivate("hex")
+    }
+
     // public static get Instance(): genSigningKey{
     //      if (typeof this.instance === "undefined"){
     //          this.instance = new genSigningKey();
@@ -52,8 +63,13 @@ export class genSigningKey {
     //     this._signingKeyPair = secp256k1.genKeyPair();
     // }
 
-    public constructor() {
-        this._signingKeyPair = secp256k1.genKeyPair();
+    public constructor(privateKey: string = null) {
+        if (privateKey === null) {
+            this._signingKeyPair = secp256k1.genKeyPair();
+        }
+        else {
+            this._signingKeyPair = secp256k1.keyFromPrivate(privateKey);
+        }
     }
 
     public static sign(keyPair: ecKeyPair, digest: string): string {
@@ -62,6 +78,19 @@ export class genSigningKey {
 
     public static verify(publicKey: string, digest: string, signature: string): boolean {
         return secp256k1.keyFromPublic(publicKey, "hex").verify(digest, signature);
+    }
+
+    // TODO: cannot resolve the process env, might need to include it in app.module
+    public static get MINT_PUBLIC_ADDRESS(): string {
+        console.log(process.env.MINT_PRIVATE_KEY)
+        const kp = new genSigningKey(process.env.MINT_PRIVATE_KEY);
+        return kp.publicKey
+    }
+
+    public static get MINT_KEY_PAIR(): ecKeyPair {
+        console.log(process.env.MINT_PRIVATE_KEY)
+        const kp = new genSigningKey(process.env.MINT_PRIVATE_KEY);
+        return kp.signingKeyPair;
     }
 }
 

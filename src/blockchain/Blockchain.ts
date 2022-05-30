@@ -37,10 +37,11 @@ export class Blockchain{
         this._chain = [];
 
         const kp: genSigningKey = new genSigningKey();
-        const initHolderKeyPair: ecKeyPair = kp.signingKeyPair;
+        // const initHolderKeyPair: ecKeyPair = kp.signingKeyPair;
         const initCoinRelease: TransactionDto = new TransactionDto(
             MINT_PUBLIC_ADDRESS,
-            initHolderKeyPair.getPublic("hex"),
+            // initHolderKeyPair.getPublic("hex"),
+            kp.publicKey,
             100000
         )
         const initCoinReleaseBlk: Block = new Block(
