@@ -1,6 +1,6 @@
 // import {ec} from "elliptic";
 // const secp256k1: ec  = new ec("secp256k1");
-import {ecKeyPair, genSigningKey} from "./keypairs";
+import {ecKeyPair, genSigningKey} from "./keypairs.service";
 
 // MINT KEY PAIR
 // TODO: Refactor the codes to directly use genSigningKey.xxxx in codes instead of calling this file.
@@ -8,5 +8,5 @@ import {ecKeyPair, genSigningKey} from "./keypairs";
 // const kp_mint = new genSigningKey(process.env.MINT_PRIVATE_KEY);
 // export const MINT_KEY_PAIR: ecKeyPair = kp_mint.signingKeyPair;
 // export const MINT_PUBLIC_ADDRESS: string = MINT_KEY_PAIR.getPublic("hex")
-export const MINT_KEY_PAIR: ecKeyPair = genSigningKey.MINT_KEY_PAIR;
-export const MINT_PUBLIC_ADDRESS: string = genSigningKey.MINT_PUBLIC_ADDRESS;
+// export const MINT_KEY_PAIR: ecKeyPair = undefined;
+// export const MINT_PUBLIC_ADDRESS: string = undefined;

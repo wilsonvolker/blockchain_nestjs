@@ -3,11 +3,15 @@ import * as enc_hex from 'crypto-js/enc-hex';
 import {DateTime} from 'luxon';
 import {log16} from "../utils/math";
 import {TransactionDto} from "../dto/TransactionDto";
-import {Blockchain} from "./Blockchain";
-import {MINT_PUBLIC_ADDRESS} from "../utils/addresses";
+import {BlockchainService} from "./Blockchain.service";
+// import {MINT_PUBLIC_ADDRESS} from "../utils/addresses";
+import {Global, Injectable} from "@nestjs/common";
+import {genSigningKey} from "../utils/keypairs.service";
 
-// class Block {
-export class Block {
+@Global()
+@Injectable()
+// class BlockService {
+export class BlockService {
     get hash(): string {
         return this._hash;
     }
@@ -77,12 +81,12 @@ export class Block {
         }
     }
 
-    static hasValidTransactions(block: Block, chain: Blockchain): boolean {
+    static hasValidTransactions(block: BlockService, chain: BlockchainService): boolean {
         let gas = 0;
         let reward = 0;
 
         block.data.forEach(tx => {
-            if (tx.from !== MINT_PUBLIC_ADDRESS) {
+            if (tx.from !== genSigningKey.MINT_PUBLIC_ADDRESS) {
                 gas += tx.gas;
             }else {
                 reward = tx.amount
@@ -92,9 +96,9 @@ export class Block {
         return (
             reward - gas === chain.miningReward &&
             block.data.every(tx => TransactionDto.isValid(tx, chain)) &&
-            block.data.filter(tx => tx.from === MINT_PUBLIC_ADDRESS).length === 1
+            block.data.filter(tx => tx.from === genSigningKey.MINT_PUBLIC_ADDRESS).length === 1
         );
     }
 }
 
-// module.exports = Block
+// module.exports = BlockService

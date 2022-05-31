@@ -1,10 +1,10 @@
-# Blockchain in nestjs
+# BlockchainService in nestjs
 
 ### References:  
 1. [Creating a blockchain in 60 lines of Javascript](https://dev.to/freakcdev297/creating-a-blockchain-in-60-lines-of-javascript-5fka)
 2. [Creating a cryptocurrency - Creating transactions, mining rewards, mint and gas fee ](https://dev.to/freakcdev297/creating-transactions-mining-rewards-mint-and-gas-fee-5hhf)
 3. [JeChain](https://github.com/nguyenphuminh/JeChain)
-4. [Nofer, M., Gomber, P., Hinz, O., & Schiereck, D. (2017). Blockchain. Business & Information Systems Engineering, 59(3), 183-187.](http://cs.unibo.it/~danilo.montesi/CBD/Articoli/2017Blockchain.pdf)
+4. [Nofer, M., Gomber, P., Hinz, O., & Schiereck, D. (2017). BlockchainService. Business & Information Systems Engineering, 59(3), 183-187.](http://cs.unibo.it/~danilo.montesi/CBD/Articoli/2017Blockchain.pdf)
 
 ### TODO (adding up from time to time, welcome suggestions):
 1. Smart contract?

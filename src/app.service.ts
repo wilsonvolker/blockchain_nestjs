@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import {Blockchain} from "./blockchain/Blockchain";
-import {Block} from "./blockchain/Block";
+import {BlockchainService} from "./blockchain/Blockchain.service";
+import {BlockService} from "./blockchain/Block.service";
 import {DateTime} from 'luxon'
 import {BlockDto} from "./dto/BlockDto";
 
 @Injectable()
 export class AppService {
-  private bc: Blockchain;
+  private bc: BlockchainService;
 
   constructor() {
-    this.bc = new Blockchain();
+    this.bc = new BlockchainService();
   }
 
   getHello(): string {
@@ -18,7 +18,7 @@ export class AppService {
 
   addBlockToChain(blockDto: BlockDto): string {
     this.bc.addBlock(
-        new Block(
+        new BlockService(
             DateTime.now(),
             blockDto.data
         )

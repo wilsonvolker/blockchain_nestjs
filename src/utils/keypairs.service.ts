@@ -1,14 +1,13 @@
 // const EC = require("elliptic").ec;
 // const ec = new EC("secp256k1");
 
-import * as sha256 from 'crypto-js/sha256';
 import {ec} from "elliptic";
-import {MINT_KEY_PAIR, MINT_PUBLIC_ADDRESS} from "./addresses";
 import {Injectable} from "@nestjs/common";
+
 const secp256k1: ec  = new ec("secp256k1");
 
 // Xsingleton
-@Injectable
+@Injectable()
 export class genSigningKey {
     // private static instance: genSigningKey;
     private _signingKeyPair: ec.KeyPair;
@@ -80,16 +79,30 @@ export class genSigningKey {
         return secp256k1.keyFromPublic(publicKey, "hex").verify(digest, signature);
     }
 
-    // TODO: cannot resolve the process env, might need to include it in app.module
     public static get MINT_PUBLIC_ADDRESS(): string {
-        console.log(process.env.MINT_PRIVATE_KEY)
+        // console.log("config service", )
+        // console.log(process.env.MINT_PRIVATE_KEY)
         const kp = new genSigningKey(process.env.MINT_PRIVATE_KEY);
         return kp.publicKey
     }
 
     public static get MINT_KEY_PAIR(): ecKeyPair {
-        console.log(process.env.MINT_PRIVATE_KEY)
+        // console.log(process.env.MINT_PRIVATE_KEY)
         const kp = new genSigningKey(process.env.MINT_PRIVATE_KEY);
+        return kp.signingKeyPair;
+    }
+
+    public static getKeyPairFromPrivateKey(privateKey: string): genSigningKey {
+        return new genSigningKey(privateKey);
+    }
+
+    public static derivePrivateKeyFromPublicKey(privateKey: string): string{
+        const kp = genSigningKey.getKeyPairFromPrivateKey(privateKey)
+        return kp.publicKey;
+    }
+
+    public static getEcKeyPairFromPrivateKey(privateKey: string): ecKeyPair {
+        const kp = genSigningKey.getKeyPairFromPrivateKey(privateKey)
         return kp.signingKeyPair;
     }
 }

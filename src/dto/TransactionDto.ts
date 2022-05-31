@@ -1,8 +1,9 @@
 import * as sha256 from 'crypto-js/sha256';
+import * as enc_hex from 'crypto-js/enc-hex';
 // import {ec} from "elliptic";
-import {Blockchain} from "../blockchain/Blockchain";
-import {MINT_PUBLIC_ADDRESS} from "../utils/addresses";
-import {ecKeyPair, genSigningKey} from "../utils/keypairs";
+import {BlockchainService} from "../blockchain/Blockchain.service";
+// import {MINT_PUBLIC_ADDRESS} from "../utils/addresses";
+import {ecKeyPair, genSigningKey} from "../utils/keypairs.service";
 // const secp256k1: ec  = new ec("secp256k1");
 
 export class TransactionDto {
@@ -57,21 +58,23 @@ export class TransactionDto {
 
     sign(keyPair: ecKeyPair): void {
         // return keyPair.sign(sha256(this.from + this.to + this.amount.tostring()), "base64").toDER("hex")
-
         if (keyPair.getPublic("hex") === this._from) {
             // this.signature = keyPair.sign(sha256(this.from + this.to + this.amount.toString()), "base64").toDER("hex")
-            this.signature = genSigningKey.sign(keyPair, sha256(this.from + this.to + this.amount.toString() + this.gas));
+            // console.log("SHA: ", sha256(this.from + this.to + this.amount.toString() + this.gas).toString(enc_hex))
+            this.signature = genSigningKey.sign(keyPair, sha256(this.from + this.to + this.amount.toString() + this.gas).toString(enc_hex));
         }
     }
 
-    static isValid(tx: TransactionDto, chain: Blockchain): boolean {
+    static isValid(tx: TransactionDto, chain: BlockchainService): boolean {
+        console.log(tx.from)
+        console.log(JSON.stringify(tx))
         return (
             tx.from &&
             tx.to &&
             tx.amount &&
-            (chain.getBalance(tx.from) >= tx.amount || tx.from === MINT_PUBLIC_ADDRESS) &&
+            (chain.getBalance(tx.from) >= tx.amount || tx.from === genSigningKey.MINT_PUBLIC_ADDRESS) &&
             // secp256k1.keyFromPublic(tx.from, "hex").verify(sha256(tx.from + tx.to + tx.amount + tx.gas), tx.signature)
-            genSigningKey.verify(tx.from, sha256(tx.from + tx.to + tx.amount + tx.gas), tx.signature)
+            genSigningKey.verify(tx.from, sha256(tx.from + tx.to + tx.amount + tx.gas).toString(enc_hex), tx.signature)
         )
     }
 }

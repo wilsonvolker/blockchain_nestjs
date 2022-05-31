@@ -1,10 +1,12 @@
 import {DateTime} from 'luxon'
-import {Block} from "./Block";
+import {BlockService} from "./Block.service";
 import {TransactionDto} from "../dto/TransactionDto";
-import {MINT_KEY_PAIR, MINT_PUBLIC_ADDRESS} from "../utils/addresses";
-import {ecKeyPair, genSigningKey} from "../utils/keypairs";
+// import {MINT_KEY_PAIR, MINT_PUBLIC_ADDRESS} from "../utils/addresses";
+import {ecKeyPair, genSigningKey} from "../utils/keypairs.service";
+import {Injectable} from "@nestjs/common";
 
-export class Blockchain{
+@Injectable()
+export class BlockchainService {
     get transactionPool(): any[] {
         return this._transactionPool;
     }
@@ -19,15 +21,15 @@ export class Blockchain{
     set difficulty(value: number) {
         this._difficulty = value;
     }
-    get chain(): Block[] {
+    get chain(): BlockService[] {
         return this._chain;
     }
 
-    set chain(value: Block[]) {
+    set chain(value: BlockService[]) {
         this._chain = value;
     }
 
-    private _chain: Block[];
+    private _chain: BlockService[];
     private _difficulty: number = 1;
     private _transactionPool = []; // temp transaction pool for storing pending transactions
     readonly blockTime: number = 30000;
@@ -36,15 +38,16 @@ export class Blockchain{
     constructor(){
         this._chain = [];
 
-        const kp: genSigningKey = new genSigningKey();
+        // const kp: genSigningKey = new genSigningKey();
+        const kp: genSigningKey = genSigningKey.getKeyPairFromPrivateKey(process.env.INIT_HOLDER_PRIVATE_KEY);
         // const initHolderKeyPair: ecKeyPair = kp.signingKeyPair;
         const initCoinRelease: TransactionDto = new TransactionDto(
-            MINT_PUBLIC_ADDRESS,
+            genSigningKey.MINT_PUBLIC_ADDRESS,
             // initHolderKeyPair.getPublic("hex"),
             kp.publicKey,
             100000
         )
-        const initCoinReleaseBlk: Block = new Block(
+        const initCoinReleaseBlk: BlockService = new BlockService(
             DateTime.now(),
             [initCoinRelease]
         );
@@ -57,7 +60,7 @@ export class Blockchain{
     }
 
     // TODO: Seems wrong logic, need to update. See proof-of-work in https://dev.to/freakcdev297/creating-a-blockchain-in-60-lines-of-javascript-5fka
-    addBlock(block: Block) {
+    addBlock(block: BlockService) {
         if (this.getLastBlock()) {
             block.prevHash = this.getLastBlock().hash;
             this._difficulty += DateTime.now().diff(this.getLastBlock().timestamp).toMillis() < this.blockTime ? 1 : -1;
@@ -69,13 +72,14 @@ export class Blockchain{
         block.hash = block.genHash();
         block.mine(this._difficulty); // proof of work to prevent excessive mining
 
-        // Freeze Block Object to ensure immutability
+        // Freeze BlockService Object to ensure immutability
         this._chain.push(
-            <Block>Object.freeze(block)
+            <BlockService>Object.freeze(block)
         );
     }
 
     addTransaction(transaction: TransactionDto) {
+        console.log(TransactionDto.isValid(transaction, this))
         if (TransactionDto.isValid(transaction, this)) {
             this._transactionPool.push(transaction)
         }
@@ -88,15 +92,20 @@ export class Blockchain{
             gas += tx.gas;
         })
 
-        const rewardTransaction = new TransactionDto(MINT_PUBLIC_ADDRESS, rewardAddress, this.miningReward + gas) // reward issuer (mint) to miner (reward) address
-        rewardTransaction.sign(MINT_KEY_PAIR);
+        console.log("gas: ", gas);
+        console.log("mining reward: ", this.miningReward);
+        const rewardTransaction = new TransactionDto(genSigningKey.MINT_PUBLIC_ADDRESS, rewardAddress, this.miningReward + gas) // reward issuer (mint) to miner (reward) address
+        rewardTransaction.sign(genSigningKey.MINT_KEY_PAIR);
 
+        console.log(this._transactionPool.length)
         if (this._transactionPool.length !== 0) {
             this.addBlock(
-                new Block(DateTime.now(),
+                new BlockService(DateTime.now(),
                     [rewardTransaction, ...this._transactionPool]
             )) // add transaction to chain
         }
+
+        console.log(this.chain[1].data)
 
         this._transactionPool = []; // remove the transaction from temporary pool
     }
@@ -120,7 +129,7 @@ export class Blockchain{
         return balance;
     }
 
-    static isValid(blockchain: Blockchain): boolean{
+    static isValid(blockchain: BlockchainService): boolean{
         for (let i=1; i < blockchain._chain.length; i++) {
             const currentBlock = blockchain._chain[i];
             const prevBlock = blockchain._chain[i-1];
@@ -128,7 +137,7 @@ export class Blockchain{
             // check if valid
             const invalidCurHashCond = currentBlock.hash !== currentBlock.genHash()
             const invalidPrevHashCond = currentBlock.prevHash !== prevBlock.hash;
-            const invalidTxCond = !Block.hasValidTransactions(currentBlock, blockchain)
+            const invalidTxCond = !BlockService.hasValidTransactions(currentBlock, blockchain)
 
             if (invalidCurHashCond || invalidPrevHashCond || invalidTxCond) {
                 return false;
