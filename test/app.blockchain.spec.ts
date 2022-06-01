@@ -69,7 +69,7 @@ describe('BlockchainService test', () => {
         transaction.sign(myKeyPair.signingKeyPair)
 
 
-        console.log(transaction)
+        // console.log(transaction)
         //  add transaction to pool
         blockchain.addTransaction(transaction);
         //  mine transaction
@@ -83,7 +83,7 @@ describe('BlockchainService test', () => {
         console.log("Friend's public key: ", fdsWallet.publicKey)
         console.log("Friend's balance: ", fdsBalance)
 
-        expect(myBalance).toBe(100197);
+        expect(myBalance).toBe(100000 + (-100) + (-10) + 500 + 10);
         expect(fdsBalance).toBe(100);
     });
 });

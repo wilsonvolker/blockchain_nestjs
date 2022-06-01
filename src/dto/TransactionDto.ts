@@ -66,8 +66,8 @@ export class TransactionDto {
     }
 
     static isValid(tx: TransactionDto, chain: BlockchainService): boolean {
-        console.log(tx.from)
-        console.log(JSON.stringify(tx))
+        // console.log(tx.from)
+        // console.log(JSON.stringify(tx))
         return (
             tx.from &&
             tx.to &&

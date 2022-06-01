@@ -79,7 +79,7 @@ export class BlockchainService {
     }
 
     addTransaction(transaction: TransactionDto) {
-        console.log(TransactionDto.isValid(transaction, this))
+        // console.log(TransactionDto.isValid(transaction, this))
         if (TransactionDto.isValid(transaction, this)) {
             this._transactionPool.push(transaction)
         }
@@ -92,12 +92,12 @@ export class BlockchainService {
             gas += tx.gas;
         })
 
-        console.log("gas: ", gas);
-        console.log("mining reward: ", this.miningReward);
+        // console.log("gas: ", gas);
+        // console.log("mining reward: ", this.miningReward);
         const rewardTransaction = new TransactionDto(genSigningKey.MINT_PUBLIC_ADDRESS, rewardAddress, this.miningReward + gas) // reward issuer (mint) to miner (reward) address
         rewardTransaction.sign(genSigningKey.MINT_KEY_PAIR);
 
-        console.log(this._transactionPool.length)
+        // console.log(this._transactionPool.length)
         if (this._transactionPool.length !== 0) {
             this.addBlock(
                 new BlockService(DateTime.now(),
@@ -105,7 +105,7 @@ export class BlockchainService {
             )) // add transaction to chain
         }
 
-        console.log(this.chain[1].data)
+        // console.log(this.chain[1].data)
 
         this._transactionPool = []; // remove the transaction from temporary pool
     }
@@ -123,6 +123,11 @@ export class BlockchainService {
                 if (transaction.to === address) { // if receiver -> increment
                     balance += transaction.amount;
                 }
+
+                // if(address === genSigningKey.derivePublicKeyFromPrivateKey(process.env.INIT_HOLDER_PRIVATE_KEY)) {
+                //     console.log("Last modified Balance: ", balance)
+                //     console.log("Transaction: ", transaction);
+                // }
             })
         })
 

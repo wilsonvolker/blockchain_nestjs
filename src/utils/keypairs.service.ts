@@ -96,7 +96,7 @@ export class genSigningKey {
         return new genSigningKey(privateKey);
     }
 
-    public static derivePrivateKeyFromPublicKey(privateKey: string): string{
+    public static derivePublicKeyFromPrivateKey(privateKey: string): string{
         const kp = genSigningKey.getKeyPairFromPrivateKey(privateKey)
         return kp.publicKey;
     }
