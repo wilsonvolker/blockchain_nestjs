@@ -1,10 +1,10 @@
-import {Body, Controller, Get, Header, HttpException, HttpStatus, Param, Post} from '@nestjs/common';
+import {Body, Controller, Get, Header, /*HttpException, HttpStatus,*/ Post, Query} from '@nestjs/common';
 import { AppService } from './app.service';
 import {BlockDto} from "./dto/BlockDto";
-import {BlockchainService} from "./blockchain/Blockchain.service";
-import {genSigningKey} from "./utils/keypairs.service";
-import {TransactionDto} from "./dto/TransactionDto";
-import {transcode} from "buffer";
+// import {BlockchainService} from "./blockchain/Blockchain.service";
+// import {genSigningKey} from "./utils/keypairs.service";
+// import {TransactionDto} from "./dto/TransactionDto";
+// import {transcode} from "buffer";
 
 @Controller()
 export class AppController {
@@ -24,7 +24,7 @@ export class AppController {
 
   @Get("/get-balance")
   @Header("content-type", "application/json")
-  getBalance(@Param("userPublicKey") userPublicKey: string): string {
+  getBalance(@Query("userPublicKey") userPublicKey: string): string {
     return JSON.stringify({
       userPublicKey,
       balance: this.appService.getBalance(userPublicKey),

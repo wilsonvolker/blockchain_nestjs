@@ -31,7 +31,19 @@
 ```
 
 ##### GET http://{url}/get-balance
+**_Request Body:_**
+```bash
+userPublicKey=<string>
 
+e.g. http://{url}/get-balance?userPublicKey=0xcj21351adxxxxxxxx
+```
+**_Return:_**
+```bash
+{
+  userPublicKey: string,
+  balance: number
+}
+```
 
 ### Automated test cases
 ./src/app.controller.spec.ts -> Test endpoints in controller  

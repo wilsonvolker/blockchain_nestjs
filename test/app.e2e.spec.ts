@@ -5,6 +5,7 @@ import { AppModule } from './../src/app.module';
 import {genSigningKey} from "../src/utils/keypairs.service";
 import {TransactionDto} from "../src/dto/TransactionDto";
 import {BlockDto} from "../src/dto/BlockDto";
+import exp from "constants";
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -85,5 +86,22 @@ describe('AppController (e2e)', () => {
         })
 
         // .expect('Hello World!');
+  })
+
+  it("Test check user balance", () => {
+    const userKeyPair: genSigningKey = genSigningKey.getKeyPairFromPrivateKey(process.env.INIT_HOLDER_PRIVATE_KEY);
+
+    return request(app.getHttpServer())
+        .get(`/get-balance?userPublicKey=${userKeyPair.publicKey}`)
+        // .send({
+        //   userPublicKey: userKeyPair.publicKey
+        // })
+        .expect(HttpStatus.OK)
+        .then((result) => {
+          console.log(result.body)
+          const {userPublicKey, balance} = result.body;
+          expect(userPublicKey).toEqual(userKeyPair.publicKey);
+          expect(balance).toEqual(100000);
+        })
   })
 });

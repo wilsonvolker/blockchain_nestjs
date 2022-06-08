@@ -68,5 +68,15 @@ describe('AppController', () => {
             expect(userKeyPair.privateKey).toBe(process.env.INIT_HOLDER_PRIVATE_KEY)
             expect(JSON.parse(result).userBalance).toBe(expectedBalance)
         })
+
+        it("Test get balance", () => {
+            const userKeyPair: genSigningKey = genSigningKey.getKeyPairFromPrivateKey(process.env.INIT_HOLDER_PRIVATE_KEY);
+            const balance: string = appController.getBalance(userKeyPair.publicKey);
+
+            expect(JSON.parse(balance)).toEqual({
+                "userPublicKey": userKeyPair.publicKey,
+                "balance": 100000,
+            });
+        })
     });
 });
