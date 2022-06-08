@@ -1,6 +1,6 @@
 # BlockchainService in nestjs
 
-### Endpoint
+### Endpoints
 #### POST http://{url}/add-block-to-chain
 **_Request Body:_**
 ```bash
@@ -46,9 +46,9 @@ e.g. http://{url}/get-balance?userPublicKey=0xcj21351adxxxxxxxx
 ```
 
 ### Automated test cases
-./src/app.controller.spec.ts -> Test endpoints in controller  
-./test/app.blockchain.spec.ts -> Test add and mine transaction from blockchain    
-./test/app.e2e.spec.ts -> E2E testing of the application.  
+`./src/app.controller.spec.ts` -> Test endpoints in controller  
+`./test/app.blockchain.spec.ts` -> Test add and mine transaction from blockchain    
+`./test/app.e2e.spec.ts` -> E2E testing of the application.  
 
 To execute:  
 ```bash
