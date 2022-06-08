@@ -1,7 +1,7 @@
 # BlockchainService in nestjs
 
 ### Endpoint
-##### POST http://{url}/add-block-to-chain
+#### POST http://{url}/add-block-to-chain
 **_Request Body:_**
 ```bash
 {
@@ -30,7 +30,7 @@
 }
 ```
 
-##### GET http://{url}/get-balance
+#### GET http://{url}/get-balance
 **_Request Body:_**
 ```bash
 userPublicKey=<string>
