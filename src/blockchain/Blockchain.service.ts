@@ -59,11 +59,14 @@ export class BlockchainService {
         return this._chain[this._chain.length - 1];
     }
 
-    // TODO: Seems wrong logic, need to update. See proof-of-work in https://dev.to/freakcdev297/creating-a-blockchain-in-60-lines-of-javascript-5fka
+    // Need to confirm the logic: See proof-of-work in https://dev.to/freakcdev297/creating-a-blockchain-in-60-lines-of-javascript-5fka
     addBlock(block: BlockService) {
         if (this.getLastBlock()) {
             block.prevHash = this.getLastBlock().hash;
             this._difficulty += DateTime.now().diff(this.getLastBlock().timestamp).toMillis() < this.blockTime ? 1 : -1;
+            if (this._difficulty <= 0) { // prevent negative difficulty
+                this._difficulty = 1;
+            }
             // console.log("now: ", DateTime.now().get("millisecond"))
             // console.log("lastblock: ", this.getLastBlock().timestamp.get("millisecond"))
             // // console.log(DateTime.now().get("millisecond") - this.getLastBlock().timestamp.get("millisecond"));

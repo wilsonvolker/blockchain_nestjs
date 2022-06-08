@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AppController (e2e) Test add block of transactions to chain 1`] = `
+Object {
+  "_data": Any<Array>,
+  "_hash": "3329641006d655583dd19bb19158ee673b867e54cfe0fe7105a0b5897996acbc",
+  "_nonce": 0,
+  "_timestamp": Any<String>,
+}
+`;
+
+exports[`AppController (e2e) Test add block of transactions to chain 2`] = `
+Object {
+  "_data": Any<Array>,
+  "_hash": "3eded801cbd363f3f80de0a64d5786c4067f0ce144a79f891de37325c143a733",
+  "_nonce": 0,
+  "_prevHash": "3329641006d655583dd19bb19158ee673b867e54cfe0fe7105a0b5897996acbc",
+  "_timestamp": Any<String>,
+}
+`;

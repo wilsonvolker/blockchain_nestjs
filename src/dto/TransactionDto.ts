@@ -4,6 +4,7 @@ import * as enc_hex from 'crypto-js/enc-hex';
 import {BlockchainService} from "../blockchain/Blockchain.service";
 // import {MINT_PUBLIC_ADDRESS} from "../utils/addresses";
 import {ecKeyPair, genSigningKey} from "../utils/keypairs.service";
+
 // const secp256k1: ec  = new ec("secp256k1");
 
 export class TransactionDto {
@@ -63,6 +64,15 @@ export class TransactionDto {
             // console.log("SHA: ", sha256(this.from + this.to + this.amount.toString() + this.gas).toString(enc_hex))
             this.signature = genSigningKey.sign(keyPair, sha256(this.from + this.to + this.amount.toString() + this.gas).toString(enc_hex));
         }
+    }
+
+    static parseFromObject(obj: TransactionDto): TransactionDto{ // https://stackoverflow.com/a/40421495
+        return new TransactionDto(
+            obj?._from,
+            obj?._to,
+            obj?._amount,
+            obj?._gas
+        );
     }
 
     static isValid(tx: TransactionDto, chain: BlockchainService): boolean {

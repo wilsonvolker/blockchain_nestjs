@@ -1,7 +1,42 @@
 # BlockchainService in nestjs
 
+### Endpoint
+##### POST http://{url}/add-block-to-chain
+**_Request Body:_**
+```bash
+{
+  block: {
+    data: [{
+      from: string, // sender public key
+      to: string, // recipient public key
+      amount: number,
+      gas: number,
+    }]
+  },
+  privateKey: string, // sender private key
+}
+```
+**_Return:_**
+```bash
+{
+  userBalance: number,
+  chain: [{
+    "_timestamp": Date,
+    "_hash": string,
+    "_nonce": number,
+    "_timestamp": string,
+    "_prevHash": Optional<string>
+  }],
+}
+```
+
+##### GET http://{url}/get-balance
+
+
 ### Automated test cases
-./test/app.blockchain.spec.ts -> Test add and mine transaction from blockchain  
+./src/app.controller.spec.ts -> Test endpoints in controller  
+./test/app.blockchain.spec.ts -> Test add and mine transaction from blockchain    
+./test/app.e2e.spec.ts -> E2E testing of the application.  
 
 To execute:  
 ```bash
